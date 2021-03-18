@@ -37,12 +37,14 @@ make_deb() {
 	# create changelog
 	pkg_name=$(grep -oP '(?<=Package: ).*' ${build_dir}/DEBIAN/control)
 	mkdir -p ${build_dir}/usr/share/doc/${pkg_name}
-	echo "${pkg_name} (${version}) ${distribution}; urgency=high" > ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
-	echo >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
-	echo "  * commit: $(get_commit)" >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
-	echo >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
-	echo " -- $(grep -oP '(?<=Maintainer: ).*' ${build_dir}/DEBIAN/control)  $(date +'%a, %d %b %Y %H:%M:%S %z')" >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
-	echo >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
+	cat << EOF > ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
+${pkg_name} (${version}) ${distribution}; urgency=high
+
+  * commit: $(get_commit)
+
+ -- $(grep -oP '(?<=Maintainer: ).*' ${build_dir}/DEBIAN/control)  $(date +'%a, %d %b %Y %H:%M:%S %z')
+
+EOF
 	gzip ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 
 	debfilename=${pkg_name}_${version}_${architecture}.deb

@@ -16,12 +16,14 @@ rosdep update
 
 cd px4_ros_com
 sed -i "s/[0-9]*<\/version>/${build_nbr}<\/version>/" package.xml
+
 version=$(grep "<version>" package.xml | sed 's/[^>]*>\([^<"]*\).*/\1/')
 title="$version ($(date +%Y-%m-%d))"
-dashes=$(printf '%*s' "${#title}" | tr ' ' "=")
-echo "$title" > CHANGELOG.rst
-echo "$dashes" >> CHANGELOG.rst
-echo "* commit: $(git rev-parse HEAD)" >> CHANGELOG.rst
+cat << EOF > CHANGELOG.rst
+$title
+$(printf '%*s' "${#title}" | tr ' ' "-")
+* commit: $(git rev-parse HEAD)
+EOF
 
 bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --place-template-files \
 && sed -i "s/@(DebianInc)@(Distribution)//" debian/changelog.em \
