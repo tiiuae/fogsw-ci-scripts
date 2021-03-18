@@ -3,6 +3,8 @@
 FROM ubuntu:20.04 as mavlink-router-builder
 
 ARG BUILD_NUMBER
+ARG DISTRIBUTION
+ARG ARCHITECTURE
 
 # Setup timezone
 RUN echo 'Etc/UTC' > /etc/timezone \
@@ -31,7 +33,7 @@ COPY debian /build/debian
 COPY package.sh /build
 WORKDIR /build
 
-RUN ./package.sh ${BUILD_NUMBER}
+RUN ./package.sh ${BUILD_NUMBER} ${DISTRIBUTION} ${ARCHITECTURE}
 
 FROM scratch
 COPY --from=mavlink-router-builder /build/*.deb /packages/

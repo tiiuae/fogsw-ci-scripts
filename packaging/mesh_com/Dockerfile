@@ -3,6 +3,8 @@
 FROM ros:foxy as mesh_com-builder
 
 ARG BUILD_NUMBER
+ARG DISTRIBUTION
+ARG ARCHITECTURE
 
 # Install build dependencies
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
@@ -18,7 +20,7 @@ COPY mesh_com   /build/mesh_com
 COPY package.sh /build
 WORKDIR /build
 
-RUN ./package.sh ${BUILD_NUMBER}
+RUN ./package.sh ${BUILD_NUMBER} ${DISTRIBUTION} ${ARCHITECTURE}
 
 FROM scratch
 COPY --from=mesh_com-builder /build/*.deb /packages/

@@ -3,6 +3,8 @@
 FROM ros:foxy as px4_ros_com-builder
 
 ARG BUILD_NUMBER
+ARG DISTRIBUTION
+ARG ARCHITECTURE
 
 RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
 
@@ -33,7 +35,7 @@ COPY px4_ros_com   /build/px4_ros_com
 COPY package.sh /build
 WORKDIR /build
 
-RUN ./package.sh ${BUILD_NUMBER}
+RUN ./package.sh ${BUILD_NUMBER} ${DISTRIBUTION} ${ARCHITECTURE}
 
 FROM scratch
 COPY --from=px4_ros_com-builder /build/*.deb /packages/

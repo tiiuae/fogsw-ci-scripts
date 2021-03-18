@@ -1,6 +1,8 @@
 #!/bin/bash
 
-build_nbr=$1
+build_nbr=${1:-0}
+distr=${2:-focal}
+arch=${3:-amd64}
 
 get_commit() {
 	cd agent_protocol_splitter
@@ -17,6 +19,8 @@ build() {
 
 make_deb() {
 	version=$1
+	distribution=$2
+	architecture=$3
 	echo "Creating deb package..."
 	build_dir=$(mktemp -d)
 	mkdir ${build_dir}/DEBIAN
@@ -33,7 +37,7 @@ make_deb() {
 	# create changelog
 	pkg_name=$(grep -oP '(?<=Package: ).*' ${build_dir}/DEBIAN/control)
 	mkdir -p ${build_dir}/usr/share/doc/${pkg_name}
-	echo "${pkg_name} (${version}-0focal) focal; urgency=high" > ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
+	echo "${pkg_name} (${version}) ${distribution}; urgency=high" > ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 	echo >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 	echo "  * commit: $(get_commit)" >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 	echo >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
@@ -41,12 +45,13 @@ make_deb() {
 	echo >> ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 	gzip ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 
-	echo agent_protocol_splitter_${version}_amd64.deb
-	fakeroot dpkg-deb --build ${build_dir} ./agent-protocol-splitter_${version}_amd64.deb
+	debfilename=${pkg_name}_${version}_${architecture}.deb
+	echo "${debfilename}"
+	fakeroot dpkg-deb --build ${build_dir} ./${debfilename}
 	rm -rf ${build_dir}
 	echo "Done"
 }
 
 version=1.0.${build_nbr}
 build
-make_deb $version
+make_deb $version $distr $arch

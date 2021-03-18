@@ -1,4 +1,5 @@
 build_nbr=$1
+distr=${2:-focal}
 
 echo "--- Generating /etc/ros/rosdep/sources.list.d/50-fogsw.list (as su)"
 mkdir -p /etc/ros/rosdep/sources.list.d
@@ -22,5 +23,10 @@ echo "$title" > CHANGELOG.rst
 echo "$dashes" >> CHANGELOG.rst
 echo "* commit: $(git rev-parse HEAD)" >> CHANGELOG.rst
 
-bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy && fakeroot debian/rules binary
+bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --place-template-files \
+&& sed -i "s/@(DebianInc)@(Distribution)//" debian/changelog.em \
+&& [ ! "$distr" = "" ] && sed -i "s/@(Distribution)/${distr}/" debian/changelog.em || : \
+&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files \
+&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
+&& fakeroot debian/rules binary
 cd ..

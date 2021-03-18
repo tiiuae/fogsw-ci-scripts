@@ -3,6 +3,8 @@
 FROM ros:foxy as indoor_pos-builder
 
 ARG BUILD_NUMBER
+ARG DISTRIBUTION
+ARG ARCHITECTURE
 
 RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
 
@@ -34,7 +36,7 @@ COPY indoor_pos   /build/indoor_pos
 COPY package.sh /build
 WORKDIR /build
 
-RUN ./package.sh ${BUILD_NUMBER}
+RUN ./package.sh ${BUILD_NUMBER} ${DISTRIBUTION} ${ARCHITECTURE}
 
 FROM scratch
 COPY --from=indoor_pos-builder /build/*.deb /packages/

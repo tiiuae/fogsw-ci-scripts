@@ -3,6 +3,8 @@
 FROM ros:foxy as depthai_ctrl-builder
 
 ARG BUILD_NUMBER
+ARG DISTRIBUTION
+ARG ARCHITECTURE
 
 RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
 
@@ -32,7 +34,7 @@ COPY depthai_ctrl   /build/depthai_ctrl
 COPY package.sh /build
 WORKDIR /build
 
-RUN ./package.sh ${BUILD_NUMBER}
+RUN ./package.sh ${BUILD_NUMBER} ${DISTRIBUTION} ${ARCHITECTURE}
 
 FROM scratch
 COPY --from=depthai_ctrl-builder /build/*.deb /packages/
