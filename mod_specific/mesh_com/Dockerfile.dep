@@ -1,0 +1,5 @@
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    dh-python \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV ROS=1

@@ -1,0 +1,14 @@
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    nlohmann-json3-dev \
+    ros-foxy-geodesy \
+    liblapacke-dev \
+    libopenblas-dev \
+    libsurvive \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install px4-msgs
+RUN curl -fsSL https://github.com/tiiuae/fog_sw/releases/download/ver_ssrc_rel_2/ros-foxy-px4-msgs_2.0.1-0focal_amd64.deb -o ros-foxy-px4-msgs.deb \
+    && dpkg -i ros-foxy-px4-msgs.deb \
+    && rm ros-foxy-px4-msgs.deb
+
+ENV ROS=1
