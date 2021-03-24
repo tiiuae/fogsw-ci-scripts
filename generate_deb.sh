@@ -1,30 +1,32 @@
 #!/bin/bash
 
-name=$1
-url=$2
-
-if [ -d $name ]; then
-	rm -Rf $name
+if [ "$1" = "" ]; then
+	echo "ERROR: module root directory not given"
+	echo " usage: $0 <module root dir>"
+	exit 1
 fi
 
-git clone $url $name
-cd $name
-git submodule update --init --recursive
-cd ..
+build_dir=$(realpath $1)
+script_dir=$(dirname $(realpath $0))
+name=$(basename $build_dir)
 
-grep -B100000 "### INCLUDE_DEPENDENCIES" Dockerfile.template | head -n -1 > Dockerfile
-if [ -e $name/packaging/Dockerfile.dep ]; then
-	cat $name/packaging/Dockerfile.dep >> Dockerfile
-elif [ -e ./mod_specific/$name/Dockerfile.dep ]; then
-	cat ./mod_specific/$name/Dockerfile.dep >> Dockerfile
+# Copy mod_specific files if not available already
+if [ -d ${script_dir}/mod_specific/$name ]; then
+	cp -R ${script_dir}/mod_specific/$name/* ${build_dir}/packaging/
 fi
-grep -A100000 "### INCLUDE_DEPENDENCIES" Dockerfile.template | tail -n +2 >> Dockerfile
 
+# Prepare Dockerfile
+cp ${build_dir}/packaging/common/Dockerfile.template ./Dockerfile
+if [ -e ${build_dir}/packaging/Dockerfile.dep ]; then
+	sed -i '/^### INCLUDE_DEPENDENCIES/ r packaging/Dockerfile.dep' Dockerfile
+fi
 
-docker build --build-arg BUILD_NUMBER=${GITHUB_RUN_NUMBER} --build-arg DISTRIBUTION=${DISTRIBUTION} --build-arg DIRECTORY=${name} -t fogsw-${name} .
-container_id=$(docker create fogsw-${name} "")
+# Generate debian package
+iname=fogsw-${name,,}
+docker build --build-arg BUILD_NUMBER=${GITHUB_RUN_NUMBER} --build-arg DISTRIBUTION=${DISTRIBUTION} -t ${iname} .
+container_id=$(docker create ${iname} "")
 docker cp ${container_id}:/packages .
 docker rm ${container_id}
 cp packages/*.deb .
 rm -Rf packages
-rm -Rf $name
+

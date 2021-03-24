@@ -106,8 +106,6 @@ if [ $ros = 1 ]; then
 
 	if [ -e ./packaging/rosdep.sh ]; then
 		./packaging/rosdep.sh
-	elif [ -e ../mod_specific/$mod_dir/rosdep.sh ]; then
-		../mod_specific/$mod_dir/rosdep.sh
 	fi
 
 	if [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; then
@@ -145,7 +143,8 @@ else
 	if [ -e ./packaging/build.sh ]; then
 		./packaging/build.sh $PWD ${build_dir}
 	else
-		../mod_specific/$mod_dir/build.sh $PWD ${build_dir}
+		echo "ERROR: No build script available"
+		exit 1
 	fi
 
 	### Create version string

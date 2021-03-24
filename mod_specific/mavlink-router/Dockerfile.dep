@@ -1,0 +1,6 @@
+
+# Install build dependencies
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    pkg-config \
+    python3-future \
+    && rm -rf /var/lib/apt/lists/*

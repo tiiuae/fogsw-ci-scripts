@@ -1,10 +1,8 @@
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    nlohmann-json3-dev \
-    ros-foxy-geodesy \
-    liblapacke-dev \
-    libopenblas-dev \
-    libatlas-base-dev \
-    libsurvive \
+    python3-genmsg \
+    openjdk-11-jdk-headless \
+    fast-rtps-lib \
+    fast-rtps-gen \
     && rm -rf /var/lib/apt/lists/*
 
 # Install px4-msgs

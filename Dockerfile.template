@@ -1,11 +1,9 @@
 # fog-sw BUILDER
-FROM ros:foxy as fog-sw-builder
+FROM ros:foxy-ros-base as fog-sw-builder
 
 ARG BUILD_NUMBER
 ARG DISTRIBUTION
 ARG ARCHITECTURE
-ARG DIRECTORY
-ARG ROS
 
 RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
 
@@ -23,17 +21,15 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 ### INCLUDE_DEPENDENCIES
 
 WORKDIR /build
-COPY ${DIRECTORY} ./${DIRECTORY}
-COPY package.sh .
-COPY mod_specific mod_specific
 
-RUN params="" \
-    && [ ! "${DIRECTORY}" = "" ] && params="$params -m ${DIRECTORY}" || : \
+COPY . .
+
+RUN params="-m $(realpath .) " \
     && [ ! "${BUILD_NUMBER}" = "" ] && params="$params -b ${BUILD_NUMBER}" || : \
     && [ ! "${DISTRIBUTION}" = "" ] && params="$params -d ${DISTRIBUTION}" || : \
     && [ ! "${ARCHITECTURE}" = "" ] && params="$params -a ${ARCHITECTURE}" || : \
     && [ ! "${ROS}" = "" ] && params="$params -r" || : \
-    && ./package.sh $params
+    && ./packaging/common/package.sh $params
 
 FROM scratch
-COPY --from=fog-sw-builder /build/*.deb /packages/
+COPY --from=fog-sw-builder /*.deb /packages/
