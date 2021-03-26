@@ -1,7 +1,6 @@
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     python3-genmsg \
     openjdk-11-jdk-headless \
-    fast-rtps-lib \
     fast-rtps-gen \
     && rm -rf /var/lib/apt/lists/*
 
