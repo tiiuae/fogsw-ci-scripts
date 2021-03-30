@@ -1,11 +1,7 @@
 
-# Install px4-msgs
-RUN curl -fsSL https://github.com/tiiuae/fog_sw/releases/download/ver_ssrc_rel_2/ros-foxy-px4-msgs_2.0.1-0focal_amd64.deb -o ros-foxy-px4-msgs.deb \
-    && dpkg -i ros-foxy-px4-msgs.deb \
-    && rm ros-foxy-px4-msgs.deb
-
-RUN curl -fsSL https://github.com/mavlink/MAVSDK/releases/download/v0.34.0/mavsdk_0.34.0_ubuntu20.04_amd64.deb -o mavsdk_0.34.0_ubuntu20.04_amd64.deb \
-    && dpkg -i mavsdk_0.34.0_ubuntu20.04_amd64.deb \
-    && rm mavsdk_0.34.0_ubuntu20.04_amd64.deb
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    mavsdk \
+    ros-foxy-px4-msgs \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV ROS=1
