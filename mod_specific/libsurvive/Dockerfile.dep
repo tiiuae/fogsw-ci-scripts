@@ -1,0 +1,9 @@
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    zlib1g-dev \
+    libx11-dev \
+    libusb-1.0-0-dev \
+    freeglut3-dev \
+    liblapacke-dev \
+    libopenblas-dev \
+    libatlas-base-dev \
+    && rm -rf /var/lib/apt/lists/*
