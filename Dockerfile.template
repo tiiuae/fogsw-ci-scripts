@@ -4,6 +4,7 @@ FROM ros:foxy-ros-base as fog-sw-builder
 ARG BUILD_NUMBER
 ARG DISTRIBUTION
 ARG ARCHITECTURE
+ARG COMMIT_ID
 
 RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
 
@@ -28,6 +29,7 @@ RUN params="-m $(realpath .) " \
     && [ ! "${BUILD_NUMBER}" = "" ] && params="$params -b ${BUILD_NUMBER}" || : \
     && [ ! "${DISTRIBUTION}" = "" ] && params="$params -d ${DISTRIBUTION}" || : \
     && [ ! "${ARCHITECTURE}" = "" ] && params="$params -a ${ARCHITECTURE}" || : \
+    && [ ! "${COMMIT_ID}" = "" ] && params="$params -c ${COMMIT_ID}" || : \
     && [ ! "${ROS}" = "" ] && params="$params -r" || : \
     && ./packaging/common/package.sh $params
 

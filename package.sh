@@ -2,7 +2,7 @@
 
 usage() {
 	echo "
-Usage: $(basename "$0") [-h] [-m dir] [-b nbr] [-d dist] [-a arch]
+Usage: $(basename "$0") [-h] [-m dir] [-b nbr] [-d dist] [-a arch] [-c commit_id]
  -- Generate debian package from fog_sw module.
 Params:
     -h  Show help text.
@@ -11,6 +11,7 @@ Params:
     -d  Distribution string in debian changelog.
     -a  Target architecture the module is built for. e.g. amd64, arm64.
     -r  ROS2 node packaging.
+    -c  Commit id of the git repository HEAD
 "
 	exit 0
 }
@@ -34,8 +35,9 @@ distr=""
 arch=""
 version=""
 ros=0
+git_commit_hash=""
 
-while getopts "hm:b:d:a:r" opt
+while getopts "hm:b:d:a:rc:" opt
 do
 	case $opt in
 		h)
@@ -55,6 +57,9 @@ do
 			;;
 		r)
 			ros=1
+			;;
+		c)
+			check_arg $OPTARG && git_commit_hash=$OPTARG || error_arg $opt
 			;;
 		\?)
 			usage
@@ -86,12 +91,10 @@ echo "build_nbr: $build_nbr"
 echo "distr: $distr"
 echo "arch: $arch"
 echo "ros: $ros"
+echo "git_commit_hash: $git_commit_hash"
 
 
 cd $mod_dir
-
-## Get git commit hash
-git_commit_hash=$(git rev-parse HEAD)
 
 ## Generate package
 echo "Creating deb package..."
