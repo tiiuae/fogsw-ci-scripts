@@ -2,6 +2,8 @@
 
 # Usage: generate_deb.sh <module-dir> <deb-output-dir> <sub-path>
 
+set -e
+
 if [ "$1" = "" ]; then
 	echo "ERROR: module root directory not given"
 	echo " usage: $0 <module-dir> <deb-output-dir> <sub-path>"
