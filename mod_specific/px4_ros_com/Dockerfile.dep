@@ -1,7 +1,7 @@
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     python3-genmsg \
     openjdk-11-jdk-headless \
-    fast-rtps-gen \
+    fast-dds-gen \
     ros-foxy-px4-msgs \
     && rm -rf /var/lib/apt/lists/*
 
