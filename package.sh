@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 usage() {
 	echo "
 Usage: $(basename "$0") [-h] [-m dir] [-b nbr] [-d dist] [-a arch] [-c commit_id]
@@ -131,7 +133,7 @@ EOF_CHANGELOG
 	&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files \
 	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
 	&& fakeroot debian/rules clean \
-	&& fakeroot debian/rules binary
+	&& fakeroot debian/rules binary || exit 1
 
 else
 
@@ -144,7 +146,7 @@ else
 	##    - copy artifacts to the build_dir
 	echo "Build the module..."
 	if [ -e ./packaging/build.sh ]; then
-		./packaging/build.sh $PWD ${build_dir}
+		./packaging/build.sh $PWD ${build_dir} || exit 1
 	else
 		echo "ERROR: No build script available"
 		exit 1
