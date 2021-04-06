@@ -11,6 +11,6 @@ cp ${build_dir}/packaging/debian/* ${dest_dir}/DEBIAN/
 cd ${build_dir}
 ./gradlew build
 mkdir -p ${dest_dir}/usr/bin/
-mkdir -p ${dest_dir}/usr/share/fastrtpsgen/java/
-cp build/libs/fastrtpsgen.jar ${dest_dir}/usr/share/fastrtpsgen/java/
-cp scripts/fastrtpsgen ${dest_dir}/usr/bin/
+mkdir -p ${dest_dir}/usr/share/fastddsgen/java/
+cp build/libs/fastddsgen.jar ${dest_dir}/usr/share/fastddsgen/java/
+cp scripts/fastddsgen ${dest_dir}/usr/bin/
