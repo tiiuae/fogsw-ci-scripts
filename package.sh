@@ -131,8 +131,13 @@ EOF_CHANGELOG
 	&& sed -i "s/@(DebianInc)@(Distribution)//" debian/changelog.em \
 	&& [ ! "$distr" = "" ] && sed -i "s/@(Distribution)/${distr}/" debian/changelog.em || : \
 	&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files \
-	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
-	&& fakeroot debian/rules clean \
+	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules
+
+	if [ -e ./packaging/extra_deps ]; then
+		sed -i "s/\(^Depends:.*\)\$/\1, $(cat ./packaging/extra_deps)/" debian/control || exit 1
+	fi
+
+	fakeroot debian/rules clean \
 	&& fakeroot debian/rules binary || exit 1
 
 else
