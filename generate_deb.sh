@@ -14,7 +14,10 @@ build_dir=$(realpath $1)
 script_dir=$(dirname $(realpath $0))
 output_dir=$(realpath ${2:-${build_dir}})
 
-name=$(basename $build_dir)
+pushd ${build_dir}
+name=$(basename $(git config --get remote.origin.url) | sed 's/.git//')
+popd
+
 mod_specific_path=${script_dir}/mod_specific/${name}
 
 sub_path=${3}
