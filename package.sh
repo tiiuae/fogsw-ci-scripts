@@ -95,7 +95,7 @@ echo "arch: $arch"
 echo "ros: $ros"
 echo "git_commit_hash: $git_commit_hash"
 
-
+script_dir=$(dirname "$0")
 cd $mod_dir
 
 ## Generate package
@@ -109,16 +109,7 @@ if [ $ros = 1 ]; then
 
 	echo "version: ${version}"
 
-	if [ -e ./packaging/rosdep.sh ]; then
-		./packaging/rosdep.sh
-	fi
-
-	if [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; then
-			echo "--- Initialize rosdep"
-			sudo rosdep init
-	fi
-	echo "--- Updating rosdep"
-	rosdep update
+	$script_dir/rosdep.sh $mod_dir
 
 	title="$version ($(date +%Y-%m-%d))"
 	cat << EOF_CHANGELOG > CHANGELOG.rst
