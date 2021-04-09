@@ -98,13 +98,14 @@ echo "git_commit_hash: $git_commit_hash"
 script_dir=$(dirname "$0")
 cd $mod_dir
 
+git_name_ext=$(git log --date=format:%Y%m%d --pretty=~git%cd.%h -n 1)
+
 ## Generate package
 echo "Creating deb package..."
 if [ $ros = 1 ]; then
 ### ROS2 Packaging
 
 	### Create version string
-	sed -i "s/[0-9]*<\/version>/${build_nbr}<\/version>/" package.xml
 	version=$(grep "<version>" package.xml | sed 's/[^>]*>\([^<"]*\).*/\1/')
 
 	echo "version: ${version}"
@@ -119,9 +120,9 @@ $(printf '%*s' "${#title}" | tr ' ' "-")
 EOF_CHANGELOG
 
 	bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --place-template-files \
-	&& sed -i "s/@(DebianInc)@(Distribution)//" debian/changelog.em \
+	&& sed -i "s/@(DebianInc)@(Distribution)/@(DebianInc)/" debian/changelog.em \
 	&& [ ! "$distr" = "" ] && sed -i "s/@(Distribution)/${distr}/" debian/changelog.em || : \
-	&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files \
+	&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files -i ${build_nbr}${git_name_ext} \
 	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
 	&& fakeroot debian/rules clean \
 	&& fakeroot debian/rules binary || exit 1
@@ -144,12 +145,10 @@ else
 	fi
 
 	### Create version string
-	version="1.0.${build_nbr}"
-	#version=$(echo $version | sed "s/\([0-9]*\.[0-9]*\.\).*/\1/")${build_nbr}
-	echo "version: ${version}"
-
+	version="1.0.0-${build_nbr}${git_name_ext}"
 	sed -i "s/VERSION/${version}/" ${build_dir}/DEBIAN/control
 	cat ${build_dir}/DEBIAN/control
+	echo "version: ${version}"
 
 	### create changelog
 	pkg_name=$(grep -oP '(?<=Package: ).*' ${build_dir}/DEBIAN/control)
