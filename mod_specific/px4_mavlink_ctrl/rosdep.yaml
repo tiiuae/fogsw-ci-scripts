@@ -1,6 +1,3 @@
-px4_msgs:
-    ubuntu: ros-foxy-px4-msgs
-
 mavsdk:
     ubuntu: mavsdk
 
