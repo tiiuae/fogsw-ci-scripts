@@ -5,6 +5,7 @@ ARG BUILD_NUMBER
 ARG DISTRIBUTION
 ARG ARCHITECTURE
 ARG COMMIT_ID
+ARG GIT_VER
 
 RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
 
@@ -30,6 +31,7 @@ RUN params="-m $(realpath .) " \
     && [ ! "${DISTRIBUTION}" = "" ] && params="$params -d ${DISTRIBUTION}" || : \
     && [ ! "${ARCHITECTURE}" = "" ] && params="$params -a ${ARCHITECTURE}" || : \
     && [ ! "${COMMIT_ID}" = "" ] && params="$params -c ${COMMIT_ID}" || : \
+    && [ ! "${GIT_VER}" = "" ] && params="$params -g ${GIT_VER}" || : \
     && [ ! "${ROS}" = "" ] && params="$params -r" || : \
     && ./packaging/common/package.sh $params
 

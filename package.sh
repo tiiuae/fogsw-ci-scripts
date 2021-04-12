@@ -14,6 +14,7 @@ Params:
     -a  Target architecture the module is built for. e.g. amd64, arm64.
     -r  ROS2 node packaging.
     -c  Commit id of the git repository HEAD
+    -g  Git version string
 "
 	exit 0
 }
@@ -38,8 +39,9 @@ arch=""
 version=""
 ros=0
 git_commit_hash=""
+git_version_string=""
 
-while getopts "hm:b:d:a:rc:" opt
+while getopts "hm:b:d:a:rc:g:" opt
 do
 	case $opt in
 		h)
@@ -62,6 +64,9 @@ do
 			;;
 		c)
 			check_arg $OPTARG && git_commit_hash=$OPTARG || error_arg $opt
+			;;
+		g)
+			check_arg $OPTARG && git_version_string=$OPTARG || error_arg $opt
 			;;
 		\?)
 			usage
@@ -94,11 +99,11 @@ echo "distr: $distr"
 echo "arch: $arch"
 echo "ros: $ros"
 echo "git_commit_hash: $git_commit_hash"
+echo "git_version_string: $git_version_string"
+
 
 script_dir=$(dirname "$0")
 cd $mod_dir
-
-git_name_ext=$(git log --date=format:%Y%m%d --pretty=~git%cd.%h -n 1)
 
 ## Generate package
 echo "Creating deb package..."
@@ -122,7 +127,7 @@ EOF_CHANGELOG
 	bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --place-template-files \
 	&& sed -i "s/@(DebianInc)@(Distribution)/@(DebianInc)/" debian/changelog.em \
 	&& [ ! "$distr" = "" ] && sed -i "s/@(Distribution)/${distr}/" debian/changelog.em || : \
-	&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files -i ${build_nbr}${git_name_ext} \
+	&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files -i ${build_nbr}${git_version_string} \
 	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
 	&& fakeroot debian/rules clean \
 	&& fakeroot debian/rules binary || exit 1
@@ -145,7 +150,7 @@ else
 	fi
 
 	### Create version string
-	version="1.0.0-${build_nbr}${git_name_ext}"
+	version="1.0.0-${build_nbr}${git_version_string}"
 	sed -i "s/VERSION/${version}/" ${build_dir}/DEBIAN/control
 	cat ${build_dir}/DEBIAN/control
 	echo "version: ${version}"
