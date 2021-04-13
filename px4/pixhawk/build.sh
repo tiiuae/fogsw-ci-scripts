@@ -16,8 +16,6 @@ output_dir=$(realpath ${2:-${build_dir}})
 
 cd ${build_dir}
 
-git_version_string=$(git log --date=format:%Y%m%d --pretty=git%cd.%h -n 1)
-
 # Copy Dockerfile and tools
 cp -f $script_dir/Dockerfile .
 
@@ -30,8 +28,6 @@ pushd tmp_
 docker cp ${container_id}:/packages .
 docker rm ${container_id}
 mkdir -p $output_dir
-px4_in_file=$(basename $(find packages/*.px4))
-px4_out_file=$(echo $px4_in_file | sed "s/\(.*\)\.px4/\1-${git_version_string}.px4/")
-cp packages/${px4_in_file} $output_dir/${px4_out_file}
+cp packages/*.px4 $output_dir/
 popd
 rm -Rf tmp_
