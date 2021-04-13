@@ -18,7 +18,7 @@ RUN mkdir /tools
 
 WORKDIR tmp
 
-RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2019q4/gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
+RUN wget -q https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2019q4/gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
 RUN tar xvf gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2 -C /tools
 ENV PATH=/tools/gcc-arm-none-eabi-9-2019-q4-major/bin/:$PATH
 
