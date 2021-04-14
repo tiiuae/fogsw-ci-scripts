@@ -56,9 +56,15 @@ make_deb() {
 	cat ${packaging_dir}/DEBIAN/control
 	echo px4fwupdater_${version}_amd64.deb
 	fakeroot dpkg-deb --build ${packaging_dir} ${dest_dir}/px4fwupdater_${version}_amd64.deb
-	cp ${packaging_dir}/opt/px4fwupdater/*.px4 ${dest_dir}/
+
+	px4_in_file=$(basename $(find ${packaging_dir}/opt/px4fwupdater/*.px4))
+	px4_out_file=$(echo ${px4_in_file} | sed "s/\(.*\)\.px4/\1-${version}.px4/")
+	echo "px4_in_file: $px4_in_file"
+	echo "px4_out_file: $px4_out_file"
+	cp ${packaging_dir}/opt/px4fwupdater/${px4_in_file} ${dest_dir}/${px4_out_file}
 }
 
+mkdir -p ${dest_dir}
 packaging_dir=$(mktemp -d)
 build_px4
 make_deb
