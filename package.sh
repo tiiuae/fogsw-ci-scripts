@@ -14,6 +14,7 @@ Params:
     -a  Target architecture the module is built for. e.g. amd64, arm64.
     -r  ROS2 node packaging.
     -c  Commit id of the git repository HEAD
+    -s  Subdirectory to be packaging
     -g  Git version string
 "
 	exit 0
@@ -40,8 +41,9 @@ version=""
 ros=0
 git_commit_hash=""
 git_version_string=""
+packaging_subdir=""
 
-while getopts "hm:b:d:a:rc:g:" opt
+while getopts "hm:b:d:a:rc:g:s:" opt
 do
 	case $opt in
 		h)
@@ -67,6 +69,9 @@ do
 			;;
 		g)
 			check_arg $OPTARG && git_version_string=$OPTARG || error_arg $opt
+			;;
+		s)
+			check_arg $OPTARG && packaging_subdir=$OPTARG || error_arg $opt
 			;;
 		\?)
 			usage
@@ -100,10 +105,15 @@ echo "arch: $arch"
 echo "ros: $ros"
 echo "git_commit_hash: $git_commit_hash"
 echo "git_version_string: $git_version_string"
+echo "packaging_subdir: $packaging_subdir"
 
+script_dir=$(realpath $(dirname "$0"))
 
-script_dir=$(dirname "$0")
-cd $mod_dir
+if [ "$packaging_subdir" != "" ]; then
+	cd $mod_dir/$packaging_subdir
+else
+	cd $mod_dir
+fi
 
 ## Generate package
 echo "Creating deb package..."
@@ -121,7 +131,7 @@ if [ $ros = 1 ]; then
 	cat << EOF_CHANGELOG > CHANGELOG.rst
 $title
 $(printf '%*s' "${#title}" | tr ' ' "-")
-* commit: $(git rev-parse HEAD)
+* commit: ${git_commit_hash}
 EOF_CHANGELOG
 
 	bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --place-template-files \
@@ -131,6 +141,11 @@ EOF_CHANGELOG
 	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
 	&& fakeroot debian/rules clean \
 	&& fakeroot debian/rules binary || exit 1
+
+	# if building sub_path then move package to root
+	if ! [ ./ -ef $mod_dir ]; then
+		mv ../*.deb $mod_dir/../
+	fi
 
 else
 
@@ -171,7 +186,7 @@ EOF
 	### create debian package
 	debfilename=${pkg_name}_${version}_${arch}.deb
 	echo "${debfilename}"
-	fakeroot dpkg-deb --build ${build_dir} ../${debfilename}
+	fakeroot dpkg-deb --build ${build_dir} $mod_dir/../${debfilename}
 
 fi
 
