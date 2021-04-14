@@ -1,5 +1,5 @@
 Package: px4-firmware-updater
-Version: 0.1
+Version: 
 Maintainer: Jani Paalijärvi <jani.paalijarvi@unikie.com>
 Architecture: amd64
 Depends:

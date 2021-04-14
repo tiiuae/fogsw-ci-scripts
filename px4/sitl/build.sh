@@ -15,8 +15,7 @@ script_dir=$(dirname $(realpath $0))
 output_dir=$(realpath ${2:-${build_dir}})
 
 cd ${build_dir}
-
-git_version_string=$(git log --date=format:%Y%m%d --pretty=git%cd.%h -n 1)
+git_version_string=$(git describe --always --tags --dirty)
 
 # Copy Dockerfile and tools
 cp -f $script_dir/Dockerfile .
