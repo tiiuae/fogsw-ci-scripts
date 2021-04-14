@@ -10,11 +10,12 @@ if [ "$1" = "" ]; then
 	exit 1
 fi
 
-build_dir=$(realpath $1)
+build_base_dir=$(realpath $1)
+build_dir=$build_base_dir
 script_dir=$(dirname $(realpath $0))
-output_dir=$(realpath ${2:-${build_dir}})
+output_dir=$(realpath ${2:-${build_base_dir}})
 
-pushd ${build_dir}
+pushd ${build_base_dir}
 name=$(basename $(git config --get remote.origin.url) | sed 's/.git//')
 popd
 
@@ -35,11 +36,11 @@ if [ -d $mod_specific_path ]; then
 	cp -f -R $mod_specific_path/* ${build_dir}/packaging/
 fi
 
-cd ${build_dir}
+cd ${build_base_dir}
 # Prepare Dockerfile
 cp -f ${build_dir}/packaging/common/Dockerfile.template ./Dockerfile
 if [ -e ${build_dir}/packaging/Dockerfile.dep ]; then
-	cp ./packaging/Dockerfile.dep .
+	cp ${build_dir}/packaging/Dockerfile.dep .
 	sed -i '/^### INCLUDE_DEPENDENCIES/ r ./Dockerfile.dep' ./Dockerfile
 fi
 
@@ -48,6 +49,7 @@ iname=fogsw-${name,,}
 docker build --build-arg COMMIT_ID=$(git rev-parse HEAD) \
 	--build-arg GIT_VER=$(git log --date=format:%Y%m%d --pretty=~git%cd.%h -n 1) \
 	--build-arg BUILD_NUMBER=${GITHUB_RUN_NUMBER} \
+	--build-arg PACKAGE_SUBDIR=${sub_path} \
 	--build-arg DISTRIBUTION=${DISTRIBUTION} -t ${iname} .
 container_id=$(docker create ${iname} "")
 docker cp ${container_id}:/packages .
