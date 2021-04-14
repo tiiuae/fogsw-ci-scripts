@@ -44,9 +44,9 @@ make_deb() {
 	echo "Creating deb package..."
 	mkdir ${packaging_dir}/DEBIAN/
 
-	cp debian/control ${packaging_dir}/DEBIAN/
-	cp debian/postinst ${packaging_dir}/DEBIAN/
-	cp debian/prerm ${packaging_dir}/DEBIAN/
+	cp ${script_dir}/debian/control ${packaging_dir}/DEBIAN/
+	cp ${script_dir}/debian/postinst ${packaging_dir}/DEBIAN/
+	cp ${script_dir}/debian/prerm ${packaging_dir}/DEBIAN/
 
 	pushd ${fw_dir}
 	version=$(git describe --always --tags --dirty | sed 's/^v//')
