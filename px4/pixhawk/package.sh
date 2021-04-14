@@ -56,6 +56,7 @@ make_deb() {
 	cat ${packaging_dir}/DEBIAN/control
 	echo px4fwupdater_${version}_amd64.deb
 	fakeroot dpkg-deb --build ${packaging_dir} ${dest_dir}/px4fwupdater_${version}_amd64.deb
+	cp ${packaging_dir}/opt/px4fwupdater/*.px4 ${dest_dir}/
 }
 
 packaging_dir=$(mktemp -d)
