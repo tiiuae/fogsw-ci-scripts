@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-empy python3-toml python3-numpy python3-genmsg \
     python3-packaging python3-jinja2 python3-yaml openjdk-11-jre \
     fast-dds-gen \
+    python3-nacl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /tools
@@ -27,7 +28,7 @@ WORKDIR /build
 COPY . .
 
 RUN . /opt/ros/foxy/setup.sh \
-    && make px4_fmu-v5_ssrc
+    && SIGNING_TOOL=Tools/cryptotools.py make px4_fmu-v5_ssrc
 
 FROM scratch
 COPY --from=px4-cross-builder /build/build/px4_fmu-v5_ssrc/px4_fmu-v5_ssrc.px4 /artifacts/
