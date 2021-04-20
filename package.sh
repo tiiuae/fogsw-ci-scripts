@@ -164,16 +164,21 @@ else
 		exit 1
 	fi
 
-	### Create version string
-	version="1.0.0-${build_nbr}${git_version_string}"
-	sed -i "s/VERSION/${version}/" ${build_dir}/DEBIAN/control
-	cat ${build_dir}/DEBIAN/control
-	echo "version: ${version}"
+	if [ -e ./packaging/package.sh ]; then
+		echo "INFO: Use package script provided by module."
+		./packaging/package.sh $PWD || exit 1
+	else
+		echo "INFO: Use default packaging."
+		### Create version string
+		version="1.0.0-${build_nbr}${git_version_string}"
+		sed -i "s/VERSION/${version}/" ${build_dir}/DEBIAN/control
+		cat ${build_dir}/DEBIAN/control
+		echo "version: ${version}"
 
-	### create changelog
-	pkg_name=$(grep -oP '(?<=Package: ).*' ${build_dir}/DEBIAN/control)
-	mkdir -p ${build_dir}/usr/share/doc/${pkg_name}
-	cat << EOF > ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
+		### create changelog
+		pkg_name=$(grep -oP '(?<=Package: ).*' ${build_dir}/DEBIAN/control)
+		mkdir -p ${build_dir}/usr/share/doc/${pkg_name}
+		cat << EOF > ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 ${pkg_name} (${version}) ${distribution}; urgency=high
 
   * commit: ${git_commit_hash}
@@ -181,13 +186,13 @@ ${pkg_name} (${version}) ${distribution}; urgency=high
  -- $(grep -oP '(?<=Maintainer: ).*' ${build_dir}/DEBIAN/control)  $(date +'%a, %d %b %Y %H:%M:%S %z')
 
 EOF
-	gzip ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
+		gzip ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 
-	### create debian package
-	debfilename=${pkg_name}_${version}_${arch}.deb
-	echo "${debfilename}"
-	fakeroot dpkg-deb --build ${build_dir} $mod_dir/../${debfilename}
-
+		### create debian package
+		debfilename=${pkg_name}_${version}_${arch}.deb
+		echo "${debfilename}"
+		fakeroot dpkg-deb --build ${build_dir} $mod_dir/../${debfilename}
+	fi
 fi
 
 rm -rf ${build_dir}
