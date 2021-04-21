@@ -1,0 +1,25 @@
+ENV DEBIAN_FRONTEND="noninteractive" TZ="Europe/Helsinki"
+
+RUN apt-get update -y && apt-get install -y --install-recommends \
+    kernel-package \
+    libncurses-dev \
+    gawk \
+    flex \
+    bison \
+    openssl \
+    libssl-dev \
+    dkms \
+    libelf-dev \
+    libudev-dev \
+    libpci-dev \
+    libiberty-dev \
+    autoconf \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN sed -i "s/# deb-src http\:\/\/archive\.ubuntu\.com\/ubuntu\/ focal main restricted/deb-src http:\/\/archive.ubuntu.com\/ubuntu\/ focal main restricted/g" /etc/apt/sources.list \
+    && sed -i "s/# deb-src http\:\/\/archive\.ubuntu\.com\/ubuntu\/ focal-updates main restricted/deb-src http:\/\/archive.ubuntu.com\/ubuntu\/ focal-updates main restricted/g" /etc/apt/sources.list \
+    && apt-get update -y
+
+WORKDIR /build
+RUN apt-get source linux-hwe-5.8-source-5.8.0
+
