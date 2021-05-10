@@ -14,6 +14,7 @@ RUN apt-get update -y && apt-get install -y --install-recommends \
     libpci-dev \
     libiberty-dev \
     autoconf \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i "s/# deb-src http\:\/\/archive\.ubuntu\.com\/ubuntu\/ focal main restricted/deb-src http:\/\/archive.ubuntu.com\/ubuntu\/ focal main restricted/g" /etc/apt/sources.list \
@@ -21,5 +22,4 @@ RUN sed -i "s/# deb-src http\:\/\/archive\.ubuntu\.com\/ubuntu\/ focal main rest
     && apt-get update -y
 
 WORKDIR /build
-RUN apt-get source linux-hwe-5.8-source-5.8.0
-
+RUN git clone https://github.com/tiiuae/linux.git -b tc-x86-5.10-dev
