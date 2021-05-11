@@ -50,7 +50,8 @@ docker build --build-arg COMMIT_ID=$(git rev-parse HEAD) \
 	--build-arg GIT_VER=$(git log --date=format:%Y%m%d --pretty=~git%cd.%h -n 1) \
 	--build-arg BUILD_NUMBER=${GITHUB_RUN_NUMBER} \
 	--build-arg PACKAGE_SUBDIR=${sub_path} \
-	--build-arg DISTRIBUTION=${DISTRIBUTION} -t ${iname} .
+	--build-arg DISTRIBUTION=${DISTRIBUTION} \
+	--build-arg KERNEL_CONFIG=${KERNEL_CONFIG} -t ${iname} .
 container_id=$(docker create ${iname} "")
 docker cp ${container_id}:/packages .
 docker rm ${container_id}

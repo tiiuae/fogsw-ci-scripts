@@ -4,7 +4,7 @@ set -e
 
 usage() {
 	echo "
-Usage: $(basename "$0") [-h] [-m dir] [-b nbr] [-d dist] [-a arch] [-c commit_id]
+Usage: $(basename "$0") [-h] [-m dir] [-b nbr] [-d dist] [-a arch] [-c commit_id] [-k kernel_config]
  -- Generate debian package from fog_sw module.
 Params:
     -h  Show help text.
@@ -16,6 +16,7 @@ Params:
     -c  Commit id of the git repository HEAD
     -s  Subdirectory to be packaging
     -g  Git version string
+    -k  Kernel configuration to be built
 "
 	exit 0
 }
@@ -42,8 +43,9 @@ ros=0
 git_commit_hash=""
 git_version_string=""
 packaging_subdir=""
+kernel_config=""
 
-while getopts "hm:b:d:a:rc:g:s:" opt
+while getopts "hm:b:d:a:rc:g:s:k:" opt
 do
 	case $opt in
 		h)
@@ -72,6 +74,9 @@ do
 			;;
 		s)
 			check_arg $OPTARG && packaging_subdir=$OPTARG || error_arg $opt
+			;;
+		k)
+			check_arg $OPTARG && kernel_config=$OPTARG || error_arg $opt
 			;;
 		\?)
 			usage
@@ -106,6 +111,7 @@ echo "ros: $ros"
 echo "git_commit_hash: $git_commit_hash"
 echo "git_version_string: $git_version_string"
 echo "packaging_subdir: $packaging_subdir"
+echo "kernel_config: $kernel_config"
 
 script_dir=$(realpath $(dirname "$0"))
 
@@ -157,16 +163,25 @@ else
 	##    - building binaries from sources
 	##    - copy artifacts to the build_dir
 	echo "Build the module..."
-	if [ -e ./packaging/build.sh ]; then
-		./packaging/build.sh $PWD ${build_dir} || exit 1
-	else
+	if [ ! -e ./packaging/build.sh ]; then
 		echo "ERROR: No build script available"
 		exit 1
+	fi
+	if [ "${kernel_config}" == "" ]; then
+		./packaging/build.sh $PWD ${build_dir} || exit 1
+	else
+		### Kernel build needs to know which configuration to be built.
+		./packaging/build.sh $PWD ${kernel_config} || exit 1
 	fi
 
 	if [ -e ./packaging/package.sh ]; then
 		echo "INFO: Use package script provided by module."
-		./packaging/package.sh $PWD || exit 1
+		if [ "${kernel_config}" == "" ]; then
+			./packaging/package.sh $PWD || exit 1
+		else
+			echo "INFO: building kernel."
+			./packaging/package.sh $PWD ${kernel_config} || exit 1
+		fi
 	else
 		echo "INFO: Use default packaging."
 		### Create version string

@@ -14,3 +14,6 @@ cd fogsw-ci-scripts
 
 ```
 The debian package is generated and copied into given output directory
+
+NOTE: For building Linux Kernel an environmental variable is needed to be set: KERNEL_CONFIG.<br>
+As the name indicates, the variables contains the Linux Kernel configuration to be used in the build.
