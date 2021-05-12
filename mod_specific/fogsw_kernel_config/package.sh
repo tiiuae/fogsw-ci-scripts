@@ -1,6 +1,7 @@
 #!/bin/bash
 
 BUILD_DIR=$1
+# $2 is the MODULE_GEN_CONFIG variable coming from environment.
 KERNEL_CONFIG=$2
 
 if [ -e linux ]; then

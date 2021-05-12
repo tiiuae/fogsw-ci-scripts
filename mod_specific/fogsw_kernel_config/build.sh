@@ -1,7 +1,10 @@
 #!/bin/bash
 
 BUILD_DIR=$1
-KERNEL_CONFIG=$2
+# This variable is ignored.
+TMP_DEB_DIR=$2
+# $3 is the MODULE_GEN_CONFIG variable coming from environment.
+KERNEL_CONFIG=$3
 
 if [ -e linux ]; then
     LINUX_SRC="/linux"

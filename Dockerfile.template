@@ -7,7 +7,7 @@ ARG ARCHITECTURE
 ARG COMMIT_ID
 ARG GIT_VER
 ARG PACKAGE_SUBDIR
-ARG KERNEL_CONFIG
+ARG MODULE_GEN_CONFIG
 
 RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
 
@@ -36,7 +36,7 @@ RUN params="-m $(realpath .) " \
     && [ ! "${GIT_VER}" = "" ] && params="$params -g ${GIT_VER}" || : \
     && [ ! "${PACKAGE_SUBDIR}" = "" ] && params="$params -s ${PACKAGE_SUBDIR}" || : \
     && [ ! "${ROS}" = "" ] && params="$params -r" || : \
-    && [ ! "${KERNEL_CONFIG}" = "" ] && params="$params -k ${KERNEL_CONFIG}" || : \
+    && [ ! "${MODULE_GEN_CONFIG}" = "" ] && params="$params -k ${MODULE_GEN_CONFIG}" || : \
     && ./${PACKAGE_SUBDIR}/packaging/common/package.sh $params
 
 FROM scratch

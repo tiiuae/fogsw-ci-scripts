@@ -51,7 +51,7 @@ docker build --build-arg COMMIT_ID=$(git rev-parse HEAD) \
 	--build-arg BUILD_NUMBER=${GITHUB_RUN_NUMBER} \
 	--build-arg PACKAGE_SUBDIR=${sub_path} \
 	--build-arg DISTRIBUTION=${DISTRIBUTION} \
-	--build-arg KERNEL_CONFIG=${KERNEL_CONFIG} -t ${iname} .
+	--build-arg MODULE_GEN_CONFIG=${MODULE_GEN_CONFIG} -t ${iname} .
 container_id=$(docker create ${iname} "")
 docker cp ${container_id}:/packages .
 docker rm ${container_id}
