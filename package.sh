@@ -140,6 +140,12 @@ $(printf '%*s' "${#title}" | tr ' ' "-")
 * commit: ${git_commit_hash}
 EOF_CHANGELOG
 
+  build_prefix=
+  if [ ! -z "${RUN_COVERITY}" ]; then
+    cov-configure --config ./conf/config.xml --comptype gcc --compiler c++ --template
+    build_prefix='cov-build --dir /idir --config ./conf/config.xml'
+  fi
+
 	bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --place-template-files \
 	&& sed -i "s/@(DebianInc)@(Distribution)/@(DebianInc)/" debian/changelog.em \
 	&& [ ! "$distr" = "" ] && sed -i "s/@(Distribution)/${distr}/" debian/changelog.em || : \
@@ -147,7 +153,7 @@ EOF_CHANGELOG
 	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
 	&& sed -i 's!dh_auto_test || true!dh_auto_test -- ARGS+=--verbose!g' debian/rules \
 	&& fakeroot debian/rules clean \
-	&& fakeroot debian/rules binary || exit 1
+	&& $build_prefix fakeroot debian/rules binary || exit 1
 
 	# if building sub_path then move package to root
 	if ! [ ./ -ef $mod_dir ]; then

@@ -43,6 +43,11 @@ if [ -e ${build_dir}/packaging/Dockerfile.dep ]; then
 	cp ${build_dir}/packaging/Dockerfile.dep .
 	sed -i '/^### INCLUDE_DEPENDENCIES/ r ./Dockerfile.dep' ./Dockerfile
 fi
+if [ ! -z "${COVERITY_URL}" ]; then
+  sed -i "s|COVERITY_URL|$COVERITY_URL|g" ./packaging/common/Dockerfile.coverity
+	sed -i '/^### INCLUDE_DEPENDENCIES/ r ./packaging/common/Dockerfile.coverity' ./Dockerfile
+  sed -i 's|COPY --from=fog-sw-builder.*|COPY --from=fog-sw-builder /idir/ /packages/|' ./Dockerfile
+fi
 
 # Generate debian package
 iname=fogsw-${name,,}
@@ -57,5 +62,5 @@ container_id=$(docker create ${iname} "")
 docker cp ${container_id}:/packages .
 docker rm ${container_id}
 mkdir -p $output_dir
-cp packages/*.deb $output_dir
+cp -r packages/* $output_dir
 rm -Rf packages

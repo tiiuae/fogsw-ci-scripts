@@ -1,0 +1,11 @@
+
+WORKDIR /idir
+WORKDIR /coverity
+
+RUN curl -L 'COVERITY_URL' -o coverity.tar.gz && \
+    tar -zxf coverity.tar.gz
+
+ENV PATH="/coverity/bin:${PATH}"
+
+ENV RUN_COVERITY=TRUE
+
