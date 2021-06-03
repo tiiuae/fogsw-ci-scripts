@@ -7,6 +7,7 @@ ARG ARCHITECTURE
 ARG COMMIT_ID
 ARG GIT_VER
 ARG PACKAGE_SUBDIR
+ARG ROS
 
 # workaround for ROS GPG Key Expiration Incident
 RUN rm /etc/apt/sources.list.d/ros2-latest.list && \
