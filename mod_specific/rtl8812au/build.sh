@@ -22,7 +22,7 @@ make KSRC=${LINUX_SRC} modules || exit 1
 cp ${BUILD_DIR}/packaging/debian/* ${DEB_DIR}/DEBIAN/
 
 mkdir -p ${DEB_DIR}/opt/rtl8812au_kmod
-cp ${BUILD_DIR}/88XXau.ko ${DEB_DIR}/opt/rtl8812au_kmod/
+cp ${BUILD_DIR}/8812au.ko ${DEB_DIR}/opt/rtl8812au_kmod/
 
 mkdir -p ${DEB_DIR}/etc/modules-load.d
 cp ${BUILD_DIR}/packaging/rtl8812au.conf ${DEB_DIR}/etc/modules-load.d/rtl8812au.conf
