@@ -1,0 +1,20 @@
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    debhelper-compat \
+    dh-exec \
+    libdbus-1-dev \
+    libssl-dev \
+    qtbase5-dev \
+    libncurses5-dev \
+    libpcsclite-dev \
+    libnl-3-dev \
+    libnl-genl-3-dev \
+    libnl-route-3-dev \
+    libpcap-dev \
+    libbsd-dev \
+    libreadline-dev \
+    pkg-config \
+    docbook-to-man \
+    docbook-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV ROS=0
