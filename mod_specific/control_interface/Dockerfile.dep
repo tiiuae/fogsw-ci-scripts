@@ -1,0 +1,13 @@
+# Install build dependencies
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    mavsdk \
+    ros-foxy-fog-msgs \
+    ros-foxy-octomap \
+    ros-foxy-octomap-msgs \
+    ros-foxy-laser-geometry \
+    ros-foxy-pcl-conversions \
+    ros-foxy-pcl-msgs \
+    ros-foxy-px4-msgs \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV ROS=1

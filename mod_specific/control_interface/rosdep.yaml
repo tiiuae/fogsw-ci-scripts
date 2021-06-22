@@ -1,0 +1,6 @@
+fog_msgs:
+    ubuntu: ros-foxy-fog-msgs
+mavsdk:
+    ubuntu: mavsdk
+px4_msgs:
+    ubuntu: ros-foxy-px4-msgs

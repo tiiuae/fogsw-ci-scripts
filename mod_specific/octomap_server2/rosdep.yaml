@@ -1,0 +1,4 @@
+pcl_conversions:
+    ubuntu: ros-foxy-pcl-conversions
+pcl_msgs:
+    ubuntu: ros-foxy-pcl-msgs
