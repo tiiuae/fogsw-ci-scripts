@@ -4,7 +4,7 @@ set -e
 
 usage() {
 	echo "
-Usage: $(basename "$0") [-h] [-m dir] [-b nbr] [-d dist] [-a arch] [-c commit_id]
+Usage: $(basename "$0") [-h] [-m dir] [-b nbr] [-d dist] [-a arch] [-c commit_id] [-k module_gen_config]
  -- Generate debian package from fog_sw module.
 Params:
     -h  Show help text.
@@ -16,6 +16,7 @@ Params:
     -c  Commit id of the git repository HEAD
     -s  Subdirectory to be packaging
     -g  Git version string
+    -k  Generic configuration that will be passed to the module build script.
 "
 	exit 0
 }
@@ -42,8 +43,9 @@ ros=0
 git_commit_hash=""
 git_version_string=""
 packaging_subdir=""
+module_gen_config=""
 
-while getopts "hm:b:d:a:rc:g:s:" opt
+while getopts "hm:b:d:a:rc:g:s:k:" opt
 do
 	case $opt in
 		h)
@@ -72,6 +74,9 @@ do
 			;;
 		s)
 			check_arg $OPTARG && packaging_subdir=$OPTARG || error_arg $opt
+			;;
+		k)
+			check_arg $OPTARG && module_gen_config=$OPTARG || error_arg $opt
 			;;
 		\?)
 			usage
@@ -106,6 +111,7 @@ echo "ros: $ros"
 echo "git_commit_hash: $git_commit_hash"
 echo "git_version_string: $git_version_string"
 echo "packaging_subdir: $packaging_subdir"
+echo "module_gen_config: $module_gen_config"
 
 script_dir=$(realpath $(dirname "$0"))
 
@@ -149,51 +155,50 @@ EOF_CHANGELOG
 
 else
 
-	build_dir=$(mktemp -d)
-	mkdir ${build_dir}/DEBIAN
+	tmp_deb_dir=$(mktemp -d)
+	mkdir ${tmp_deb_dir}/DEBIAN
 
 	## Build the module
 	##   module build.sh contains actions:
 	##    - building binaries from sources
-	##    - copy artifacts to the build_dir
+	##    - copy artifacts to the tmp_deb_dir
 	echo "Build the module..."
-	if [ -e ./packaging/build.sh ]; then
-		./packaging/build.sh $PWD ${build_dir} || exit 1
-	else
+	if [ ! -e ./packaging/build.sh ]; then
 		echo "ERROR: No build script available"
 		exit 1
 	fi
+	./packaging/build.sh $PWD ${tmp_deb_dir} ${module_gen_config} || exit 1
 
 	if [ -e ./packaging/package.sh ]; then
 		echo "INFO: Use package script provided by module."
-		./packaging/package.sh $PWD || exit 1
+		./packaging/package.sh $PWD ${module_gen_config} || exit 1
 	else
 		echo "INFO: Use default packaging."
 		### Create version string
 		version="1.0.0-${build_nbr}${git_version_string}"
-		sed -i "s/VERSION/${version}/" ${build_dir}/DEBIAN/control
-		cat ${build_dir}/DEBIAN/control
+		sed -i "s/VERSION/${version}/" ${tmp_deb_dir}/DEBIAN/control
+		cat ${tmp_deb_dir}/DEBIAN/control
 		echo "version: ${version}"
 
 		### create changelog
-		pkg_name=$(grep -oP '(?<=Package: ).*' ${build_dir}/DEBIAN/control)
-		mkdir -p ${build_dir}/usr/share/doc/${pkg_name}
-		cat << EOF > ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
+		pkg_name=$(grep -oP '(?<=Package: ).*' ${tmp_deb_dir}/DEBIAN/control)
+		mkdir -p ${tmp_deb_dir}/usr/share/doc/${pkg_name}
+		cat << EOF > ${tmp_deb_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 ${pkg_name} (${version}) ${distribution}; urgency=high
 
   * commit: ${git_commit_hash}
 
- -- $(grep -oP '(?<=Maintainer: ).*' ${build_dir}/DEBIAN/control)  $(date +'%a, %d %b %Y %H:%M:%S %z')
+ -- $(grep -oP '(?<=Maintainer: ).*' ${tmp_deb_dir}/DEBIAN/control)  $(date +'%a, %d %b %Y %H:%M:%S %z')
 
 EOF
-		gzip ${build_dir}/usr/share/doc/${pkg_name}/changelog.Debian
+		gzip ${tmp_deb_dir}/usr/share/doc/${pkg_name}/changelog.Debian
 
 		### create debian package
 		debfilename=${pkg_name}_${version}_${arch}.deb
 		echo "${debfilename}"
-		fakeroot dpkg-deb --build ${build_dir} $mod_dir/../${debfilename}
+		fakeroot dpkg-deb --build ${tmp_deb_dir} $mod_dir/../${debfilename}
 	fi
 fi
 
-rm -rf ${build_dir}
+rm -rf ${tmp_deb_dir}
 echo "Done"

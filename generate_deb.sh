@@ -50,6 +50,7 @@ docker build --build-arg COMMIT_ID=$(git rev-parse HEAD) \
 	--build-arg GIT_VER=$(git log --date=format:%Y%m%d --pretty=~git%cd.%h -n 1) \
 	--build-arg BUILD_NUMBER=${GITHUB_RUN_NUMBER} \
 	--build-arg PACKAGE_SUBDIR=${sub_path} \
+	--build-arg MODULE_GEN_CONFIG=${MODULE_GEN_CONFIG} \
 	--build-arg ROS=${ROS} \
 	--build-arg DISTRIBUTION=${DISTRIBUTION} -t ${iname} .
 container_id=$(docker create ${iname} "")

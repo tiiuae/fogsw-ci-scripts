@@ -1,6 +1,10 @@
 #!/bin/bash
 
 BUILD_DIR=$1
+# This variable is ignored.
+TMP_DEB_DIR=$2
+# $3 is the MODULE_GEN_CONFIG variable coming from environment.
+KERNEL_CONFIG=$3
 
 if [ -e linux ]; then
     LINUX_SRC="/linux"
@@ -11,13 +15,25 @@ else
     exit 1
 fi
 
-echo "$PWD Create kernel configuration."
+if [ "${KERNEL_CONFIG}" == "" ]; then
+    echo "ERROR: linux kernel configuration parameter is missing."
+    exit 1
+fi
+
+if [ "${KERNEL_CONFIG}" != "x86_kvm_secure_release" ] && \
+   [ "${KERNEL_CONFIG}" != "x86_kvm_guest_secure_release" ] && \
+   [ "${KERNEL_CONFIG}" != "x86_debug" ] ; then
+    echo "ERROR: linux kernel configuration (${KERNEL_CONFIG}) parameter is not valid."
+    exit 1
+fi
+
+echo "Create kernel configuration: ${KERNEL_CONFIG}."
 # Other possible configurations:
 #    x86_kvm_release, x86_kvm_guest_release,
 #    x86_kvm_secure_release, x86_kvm_guest_secure_release
-/${BUILD_DIR}/config/defconfig_builder.sh -k /${BUILD_DIR}${LINUX_SRC} -t x86_debug
+/${BUILD_DIR}/config/defconfig_builder.sh -k /${BUILD_DIR}${LINUX_SRC} -t ${KERNEL_CONFIG}
 pushd /${BUILD_DIR}${LINUX_SRC} > /dev/null
-make x86_debug_defconfig
+make ${KERNEL_CONFIG}_defconfig
 popd > /dev/null
 
 exit 0
