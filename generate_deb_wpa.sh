@@ -50,10 +50,9 @@ cd ${build_base_dir}
 echo "build_dir: " ${build_dir}
 # Prepare Dockerfile
 cp -f ${build_dir}/packaging/common/Dockerfile_wpa.template ./Dockerfile
-if [ -e ${build_dir}/packaging/Dockerfile_wpa.dep ]; then
-	echo "found .dep file !!!!!!!!!!!!!!!!!!111"
-	cp ${build_dir}/packaging/Dockerfile_wpa.dep .
-	sed -i '/^### INCLUDE_DEPENDENCIES/ r ./Dockerfile_wpa.dep' ./Dockerfile
+if [ -e ${build_dir}/packaging/Dockerfile.dep ]; then
+	cp ${build_dir}/packaging/Dockerfile.dep .
+	sed -i '/^### INCLUDE_DEPENDENCIES/ r ./Dockerfile.dep' ./Dockerfile
 fi
 
 # Generate debian package
