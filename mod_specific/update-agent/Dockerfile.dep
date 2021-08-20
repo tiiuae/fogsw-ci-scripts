@@ -1,6 +1,4 @@
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    ros-foxy-geodesy \
-    ros-foxy-px4-msgs \
     libcurl4-openssl-dev \
     curl \
     libssl-dev \
