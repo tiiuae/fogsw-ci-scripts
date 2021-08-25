@@ -47,6 +47,8 @@ make_deb() {
 	cp ${script_dir}/debian/control ${packaging_dir}/DEBIAN/
 	cp ${script_dir}/debian/postinst ${packaging_dir}/DEBIAN/
 	cp ${script_dir}/debian/prerm ${packaging_dir}/DEBIAN/
+	cp ${script_dir}/px4_update_fw.sh ${packaging_dir}/opt/px4fwupdater/px4_update_fw.sh
+	cp ${script_dir}/detect_ttyS.sh ${packaging_dir}/opt/px4fwupdater/detect_ttyS.sh
 
 	pushd ${fw_dir}
 	version=$(git describe --always --tags --dirty | sed 's/^v//')
