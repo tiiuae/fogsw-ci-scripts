@@ -8,6 +8,8 @@ if [ -e linux ]; then
     LINUX_SRC="/linux"
 elif [ -e linux-hwe-5.8-5.8.0 ]; then
     LINUX_SRC="/linux-hwe-5.8-5.8.0"
+elif [ -e linux-hwe-5.11-5.11.0 ]; then
+    LINUX_SRC="/linux-hwe-5.11-5.11.0"
 else
     echo "ERROR: linux kernel sources are missing."
     exit 1
@@ -25,11 +27,18 @@ if [ "${KERNEL_CONFIG}" == "x86_kvm_secure_release" ]; then
 elif [ "${KERNEL_CONFIG}" == "x86_kvm_guest_secure_release" ]; then
     echo "guest-sec-rel"
     local_ver="-guest-sec-rel"
-elif [ "${KERNEL_CONFIG}" == "x86_debug" ] ; then
+elif [ "${KERNEL_CONFIG}" == "x86_debug" ]; then
     echo "debug"
     local_ver="-debug"
+elif [ "${KERNEL_CONFIG}" == "fog" ]; then
+    echo "fog"
+    local_ver="-fog"
 else
     echo "ERROR: linux kernel configuration parameter is not valid."
+    exit 1
+fi
+if [ ! -e /${BUILD_DIR}${LINUX_SRC}/.config ]; then
+    echo "ERROR: Kernel .config file does not exist in /${BUILD_DIR}${LINUX_SRC}/."
     exit 1
 fi
 sed -i "s/CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=\"${local_ver}\"/g" /${BUILD_DIR}${LINUX_SRC}/.config
