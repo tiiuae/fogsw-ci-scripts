@@ -23,4 +23,4 @@ RUN sed -i "s/# deb-src http\:\/\/archive\.ubuntu\.com\/ubuntu\/ focal main rest
     && apt-get update -y
 
 WORKDIR /build
-RUN git clone https://github.com/tiiuae/linux.git -b tc-x86-5.10-sec
+RUN apt-get source linux-hwe-5.11-source-5.11.0
