@@ -42,6 +42,7 @@ if [ "${KERNEL_CONFIG}" == "fog" ]; then
     scripts/config --set-str SYSTEM_TRUSTED_KEYS ""
     scripts/config --set-str SYSTEM_REVOCATION_KEYS ""
     scripts/config --enable ATH_REG_DYNAMIC_USER_REG_HINTS
+    scripts/config --enable ATH_REG_DYNAMIC_USER_CERT_TESTING
     scripts/config --enable CFG80211_CERTIFICATION_ONUS
     popd > /dev/null
 else
