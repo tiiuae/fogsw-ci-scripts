@@ -45,7 +45,7 @@ sed -i "s/CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=\"${local_ver}\"/g" /${BUIL
 
 echo "Build and package Linux Kernel."
 pushd /${BUILD_DIR}${LINUX_SRC} > /dev/null
-fakeroot make-kpkg --initrd --revision=1 --jobs $(nproc) kernel_image
+fakeroot make-kpkg --initrd --revision=2 --jobs $(nproc) kernel_image
 mv ../*.deb /
 popd > /dev/null
 
