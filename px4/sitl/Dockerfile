@@ -39,14 +39,29 @@ WORKDIR /px4-firmware
 # Copy repository contents
 COPY . .
 
+RUN [ -d ./build ] && rm -Rf ./build || :
+
 # Build the PX4 firmware for SITL
 RUN . /opt/ros/foxy/setup.sh \
     && DONT_RUN=1 make px4_sitl_rtps gazebo_ssrc_fog_x
+
+RUN mkdir /px4_sitl_plugins \
+    && find /px4-firmware/build/px4_sitl_rtps/build_gazebo/*.so -exec cp {} /px4_sitl_plugins \;
 
 # Bare bones image containing only the build results
 # This image can be used for retrieving relevant px4 firmware artifacts
 FROM scratch
 
-COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/build_gazebo  /px4_sitl_plugins
-COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/bin           /px4_sitl/build/px4_sitl_rtps/bin
-COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/etc           /px4_sitl/build/px4_sitl_rtps/etc
+# Copy build artifacts
+COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/bin                    /px4_sitl/build/px4_sitl_rtps/bin
+COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/etc                    /px4_sitl/build/px4_sitl_rtps/etc
+
+# Copy gazebo_data
+COPY --from=px4_firmware_builder /px4_sitl_plugins                                        /px4_gazebo_data/plugins
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo/models/asphalt_plane     /px4_gazebo_data/models/asphalt_plane
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo/models/ground_plane      /px4_gazebo_data/models/ground_plane
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo/models/sun               /px4_gazebo_data/models/sun
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo/models/ssrc_fog_x        /px4_gazebo_data/models/ssrc_fog_x
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo/worlds/empty.world       /px4_gazebo_data/worlds/
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo/worlds/empty_ssrc.world  /px4_gazebo_data/worlds/
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo/scripts/jinja_gen.py     /px4_gazebo_data/scripts/
