@@ -1,0 +1,4 @@
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    golang-1.16-go \
+    && rm -rf /var/lib/apt/lists/*
+
