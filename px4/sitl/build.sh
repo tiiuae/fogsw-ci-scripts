@@ -26,9 +26,11 @@ docker build -t ${iname} .
 container_id=$(docker create ${iname} "")
 mkdir -p tmp_
 pushd tmp_
+docker cp ${container_id}:/px4_gazebo_data .
 docker cp ${container_id}:/px4_sitl .
 docker rm ${container_id}
 mkdir -p $output_dir
 tar czvf $output_dir/px4_sitl_build-${git_version_string}.tar.gz px4_sitl
+tar czvf $output_dir/px4_gazebo_data-${git_version_string}.tar.gz px4_gazebo_data
 popd
 rm -Rf tmp_
