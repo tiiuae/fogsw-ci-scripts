@@ -145,6 +145,7 @@ EOF_CHANGELOG
 	&& [ ! "$distr" = "" ] && sed -i "s/@(Distribution)/${distr}/" debian/changelog.em || : \
 	&& bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy --process-template-files -i ${build_nbr}${git_version_string} \
 	&& sed -i 's/^\tdh_shlibdeps.*/& --dpkg-shlibdeps-params=--ignore-missing-info/g' debian/rules \
+	&& sed -i 's!dh_auto_test || true!dh_auto_test -- ARGS+=--verbose!g' debian/rules \
 	&& fakeroot debian/rules clean \
 	&& fakeroot debian/rules binary || exit 1
 
