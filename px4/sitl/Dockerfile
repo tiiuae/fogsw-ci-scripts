@@ -28,6 +28,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     gazebo11 \
     libgazebo11-dev \
     fast-dds-gen \
+    && pip3 install kconfiglib jsonschema \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LANG C.UTF-8

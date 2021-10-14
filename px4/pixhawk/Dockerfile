@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-empy python3-toml python3-numpy python3-genmsg \
     python3-packaging python3-jinja2 python3-yaml openjdk-11-jre \
     fast-dds-gen \
-    python3-nacl \
+    python3-nacl python3-pip \
+    && pip3 install kconfiglib jsonschema \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /tools
