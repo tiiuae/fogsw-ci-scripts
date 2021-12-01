@@ -10,15 +10,7 @@ ARG PACKAGE_SUBDIR
 ARG MODULE_GEN_CONFIG
 ARG ROS
 
-# workaround for ROS GPG Key Expiration Incident
-RUN rm /etc/apt/sources.list.d/ros2-latest.list && \
-    apt-get update && \
-    apt-get install -y curl && \
-    curl http://repo.ros2.org/repos.key | sudo apt-key add - && \
-    echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list && \
-    apt-get update
-
-RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
+RUN echo "deb [trusted=yes] https://ssrc.jfrog.io/artifactory/ssrc-debian-public-remote focal fog-sw" >> /etc/apt/sources.list
 
 # Install build dependencies
 RUN apt-get update -y && apt-get install -y --no-install-recommends \

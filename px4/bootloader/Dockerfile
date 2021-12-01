@@ -5,7 +5,7 @@ ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local $(lsb_release -cs) fog-sw" > /etc/apt/sources.list.d/fogsw-latest.list
+RUN echo "deb [trusted=yes] https://ssrc.jfrog.io/artifactory/ssrc-debian-public-remote focal fog-sw" >> /etc/apt/sources.list.d/fogsw-latest.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git build-essential wget cmake \

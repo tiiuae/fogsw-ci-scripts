@@ -2,7 +2,7 @@
 # There should not be need to publish this builder image anywhere
 FROM ros:foxy as px4_firmware_builder
 
-RUN echo "deb [trusted=yes] https://artifactory.ssrc.fi/artifactory/debian-public-local focal fog-sw" >> /etc/apt/sources.list
+RUN echo "deb [trusted=yes] https://ssrc.jfrog.io/artifactory/ssrc-debian-public-remote focal fog-sw" >> /etc/apt/sources.list
 
 # Install build tools
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
