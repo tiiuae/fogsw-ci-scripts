@@ -29,8 +29,10 @@ WORKDIR /build
 COPY . .
 
 RUN . /opt/ros/foxy/setup.sh \
-    && SIGNING_TOOL=Tools/cryptotools.py make px4_fmu-v5_ssrc
+    && SIGNING_TOOL=Tools/cryptotools.py make px4_fmu-v5_ssrc \
+    && SIGNING_TOOL=Tools/cryptotools.py make px4_fmu-v5x_ssrc
 
 FROM scratch
 COPY --from=px4-cross-builder /build/build/px4_fmu-v5_ssrc/px4_fmu-v5_ssrc.px4 /artifacts/
+COPY --from=px4-cross-builder /build/build/px4_fmu-v5x_ssrc/px4_fmu-v5x_ssrc.px4 /artifacts/
 COPY --from=px4-cross-builder /build/Tools/px_uploader.py /artifacts/
