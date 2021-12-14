@@ -29,6 +29,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     libgazebo11-dev \
     fast-dds-gen \
     ninja-build \
+    ros-foxy-gazebo-ros \
     && pip3 install kconfiglib jsonschema \
     && rm -rf /var/lib/apt/lists/*
 
