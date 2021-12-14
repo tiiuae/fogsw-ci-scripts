@@ -77,6 +77,13 @@ make_deb() {
 	popd
 	sed -i "s/Version:.*/&${version}/" ${packaging_dir}/DEBIAN/control
 
+	# move elf files from deb
+	for elf in ${packaging_dir}/opt/px4fwupdater/*.elf
+	do
+		elf_out_file=$(basename $elf | sed "s/\(.*\)\.elf/\1-${version}.elf/")
+		mv $elf ${dest_dir}/${elf_out_file}
+	done
+
 	cat ${packaging_dir}/DEBIAN/control
 	echo px4fwupdater_${version}_amd64.deb
 	fakeroot dpkg-deb --build ${packaging_dir} ${dest_dir}/px4fwupdater_${version}_amd64.deb
