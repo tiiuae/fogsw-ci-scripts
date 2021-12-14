@@ -40,6 +40,28 @@ build_px4() {
 	popd
 }
 
+build_saluki() {
+	pushd ${fw_dir}
+
+	# Copy Dockerfile and tools
+	cp -f $script_dir/Dockerfile.saluki .
+
+	# Generate debian package
+	iname=tii-px4-saluki-artifacts
+	docker build -f Dockerfile.saluki -t ${iname} .
+	container_id=$(docker create ${iname} "")
+	mkdir -p tmp_
+	pushd tmp_
+	docker cp ${container_id}:/artifacts .
+	docker rm ${container_id}
+	mkdir -p ${packaging_dir}/opt/px4fwupdater/
+	cp artifacts/* ${packaging_dir}/opt/px4fwupdater/
+	popd
+	rm -Rf tmp_
+	popd
+}
+
+
 make_deb() {
 	echo "Creating deb package..."
 	mkdir ${packaging_dir}/DEBIAN/
@@ -59,16 +81,18 @@ make_deb() {
 	echo px4fwupdater_${version}_amd64.deb
 	fakeroot dpkg-deb --build ${packaging_dir} ${dest_dir}/px4fwupdater_${version}_amd64.deb
 
-	px4_in_file=$(basename $(find ${packaging_dir}/opt/px4fwupdater/*.px4))
-	px4_out_file=$(echo ${px4_in_file} | sed "s/\(.*\)\.px4/\1-${version}.px4/")
-	echo "px4_in_file: $px4_in_file"
-	echo "px4_out_file: $px4_out_file"
-	cp ${packaging_dir}/opt/px4fwupdater/${px4_in_file} ${dest_dir}/${px4_out_file}
+	for px4 in ${packaging_dir}/opt/px4fwupdater/*.px4
+	do
+		px4_out_file=$(basename $px4 | sed "s/\(.*\)\.px4/\1-${version}.px4/")
+		cp $px4 ${dest_dir}/${px4_out_file}
+	done
+
 }
 
 mkdir -p ${dest_dir}
 packaging_dir=$(mktemp -d)
 build_px4
+build_saluki
 make_deb
 rm -rf ${packaging_dir}
 echo "Done"
