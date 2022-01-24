@@ -29,8 +29,11 @@ ENV CRYPTO_HAL=monocypher
 ENV PUBLIC_KEY0=/build/crypto_hal/test_key/key0.pub
 
 RUN make px4fmuv5_bl
+RUN make px4fmuv5x_bl
 
 
 FROM scratch
 COPY --from=px4-bl-builder /build/build/px4fmuv5_bl/px4fmuv5_bl.hex /artifacts/
 COPY --from=px4-bl-builder /build/build/px4fmuv5_bl/px4fmuv5_bl.bin /artifacts/
+COPY --from=px4-bl-builder /build/build/px4fmuv5x_bl/px4fmuv5x_bl.hex /artifacts/
+COPY --from=px4-bl-builder /build/build/px4fmuv5x_bl/px4fmuv5x_bl.bin /artifacts/
