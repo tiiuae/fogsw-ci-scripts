@@ -10,4 +10,5 @@ make || exit 1
 make DESTDIR=${dest_dir} install
 
 mkdir -p ${dest_dir}/etc/mavlink-router/
-cp ${build_dir}/main.conf  ${dest_dir}/etc/mavlink-router/
+cp ${build_dir}/main.uart.conf  ${dest_dir}/etc/mavlink-router/
+cp ${build_dir}/main.eth.conf  ${dest_dir}/etc/mavlink-router/
